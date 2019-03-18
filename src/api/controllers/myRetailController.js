@@ -38,7 +38,8 @@ const getProduct = async (req, res) => {
 
         const dbProduct = await Product.findOne({productId})
         const productPrice = _.get(dbProduct, 'price', 'Unavailable')
-
+        
+        console.log(`GET successful: {productName: ${productName}, productPrice: ${productPrice}}`)
         res.json({productId, productName, productPrice})
     } catch (error) {
         console.error(error)
