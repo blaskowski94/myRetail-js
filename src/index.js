@@ -3,7 +3,8 @@ const routes = require('./util/routeLoader')
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
-const logger = require('morgan')
+// TODO: logging
+const logger = require('morgan') 
 
 const port = process.env.PORT || 3000
 const password = process.env.PASSWORD

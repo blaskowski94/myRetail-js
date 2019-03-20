@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const schemaValidator = require('../util/schemaValidator')
 const mongoose = require('mongoose')
-Product = mongoose.model('Product')
+const Product = mongoose.model('Product')
 
 const schema = {
     params: Joi.object().keys({

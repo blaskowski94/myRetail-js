@@ -7,6 +7,7 @@
     "node": ">=10.0.0"
   },
   "scripts": {
+    "lint": "eslint src/",
     "start-dev": "nodemon src/index.js",
     "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -22,6 +23,7 @@
   },
   "homepage": "https://github.com/blaskowski94/myRetail-js#readme",
   "devDependencies": {
+    "eslint": "5.15.3",
     "nodemon": "1.18.10"
   },
   "dependencies": {

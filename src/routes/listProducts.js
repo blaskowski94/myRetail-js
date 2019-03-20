@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-Product = mongoose.model('Product')
+const Product = mongoose.model('Product')
 
 module.exports = router => {
     router.get('/products', async (req, res) => {

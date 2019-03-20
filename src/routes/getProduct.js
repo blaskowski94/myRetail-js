@@ -3,7 +3,7 @@ const _ = require('lodash')
 const fetch = require('node-fetch')
 const mongoose = require('mongoose')
 const schemaValidator = require('../util/schemaValidator')
-Product = mongoose.model('Product')
+const Product = mongoose.model('Product')
 
 const schema =  {
     params: Joi.object().keys({

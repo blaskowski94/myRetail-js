@@ -2,7 +2,7 @@ const Joi = require('joi')
 const schemaValidator = require('../util/schemaValidator')
 const _ = require('lodash')
 const mongoose = require('mongoose')
-Product = mongoose.model('Product')
+const Product = mongoose.model('Product')
 
 const schema = {
     body: Joi.object().keys({
