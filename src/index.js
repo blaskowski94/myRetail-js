@@ -1,8 +1,9 @@
-require('./api/models/myRetailModel')
-const routes = require('./api/routes/myRetailRoutes')
+require('./db/ProductModel')
+const routes = require('./util/routeLoader')
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const logger = require('morgan')
 
 const port = process.env.PORT || 3000
 const password = process.env.PASSWORD
@@ -11,16 +12,16 @@ const app = express()
 
 // TODO: load data into DB
 // connect to mongodb, then configure & start server
-mongoose.connect(`mongodb+srv://${user}:${password}@myretaildbcluster-nqsoj.mongodb.net/test?retryWrites=true`,
+mongoose.connect(`mongodb+srv://${user}:${password}@myretaildbcluster-nqsoj.mongodb.net/myRetail?retryWrites=true`,
     {useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false})
         .then(() => {
             console.log('Database connection successful')
             
-            app.use(bodyParser.urlencoded({extended: true}))
+            app.use(bodyParser.urlencoded({extended: false}))
             app.use(bodyParser.json())
-            routes(app)
+            app.use('/', routes);
             app.use((req, res) => {
-                res.status(404).send({url: req.originalUrl + ' not found on server'})
+                res.status(404).send()
             })
             app.listen(port, () => {
                 console.log(`myRetail RESTful service is ready, listening on port ${port}`)

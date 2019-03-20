@@ -1,13 +1,17 @@
 const mongoose = require('mongoose')
 const {Schema} = mongoose
 
-const ProductSchema = new Schema({
+const ProductModel = new Schema({
     productId: {
         type: Number,
         unique: true,
         required: '8 digit number',
         min: 10000000,
-        max: 99999999
+        max: 99999999,
+        validate : {
+            validator : Number.isInteger,
+            message   : '{VALUE} is not an integer value'
+        }
     },
     price: {
         type: String,
@@ -16,4 +20,4 @@ const ProductSchema = new Schema({
     },
 })
 
-module.exports = mongoose.model('Product', ProductSchema)
+module.exports = mongoose.model('Product', ProductModel)
