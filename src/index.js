@@ -13,11 +13,12 @@ const app = express()
 
 // TODO: load data into DB
 // connect to mongodb, then configure & start server
+console.log('connecting to database...')
 mongoose.connect(`mongodb+srv://${user}:${password}@myretaildbcluster-nqsoj.mongodb.net/myRetail?retryWrites=true`,
     {useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false})
     .then(() => {
-        console.log('Database connection successful')
-
+        console.log('database connection successful...')
+        console.log('starting server...')
         app.use(bodyParser.urlencoded({extended: false}))
         app.use(bodyParser.json())
         app.use('/', routes)

@@ -1,14 +1,14 @@
 const express = require('express')
 const router = express.Router()
+const fs = require('fs')
 
-const getProducts = require('../routes/getProduct')
-const listProducts = require('../routes/listProducts')
-const deleteProduct = require('../routes/deleteProduct')
-const updateProduct = require('../routes/updateProduct')
-const createProduct = require('../routes/createProduct')
+const routePath = __dirname + '/../routes/'
 
-// TODO: load routes dynamically
-const routes = [getProducts, listProducts, deleteProduct, updateProduct, createProduct]
-routes.map(route => route(router))
+console.log('loading routes...')
+fs.readdirSync(routePath).forEach(file => {
+    const path = routePath + file
+    const extension = path.split('.').pop()
+    if (fs.lstatSync(path).isFile() && extension === 'js') require(path)(router)
+})
 
 module.exports = router
