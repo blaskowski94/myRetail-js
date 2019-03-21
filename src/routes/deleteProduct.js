@@ -9,7 +9,7 @@ const schema = {
     })
 }
 
-module.exports = router => {
+module.exports = router =>
     router.delete('/products/:id', schemaValidator(schema), async (req, res) => {
         try {
             const productId = req.params.id
@@ -18,7 +18,7 @@ module.exports = router => {
             res.status(204).send()
         } catch (error) {
             console.error(error)
-            res.status(500).send('An error occured, contact administrator')
+            res.status(500).json({error: 'An error occured, contact administrator'})
         }
     })
-}
+

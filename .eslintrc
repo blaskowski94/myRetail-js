@@ -1,0 +1,74 @@
+{
+    "extends": [
+    "eslint:recommended"
+],
+    "env": {
+    "es6": true,
+        "node": true
+},
+    "parserOptions": {
+    "ecmaVersion": 2018,
+        "sourceType": "module"
+},
+    "plugins": [
+    "jest"
+],
+    "rules" : {
+    "array-bracket-spacing": ["error", "never"],
+        "arrow-parens": ["error", "as-needed"],
+        "arrow-spacing": "error",
+        "brace-style": ["error", "1tbs"],
+        "comma-dangle": ["error", "never"],
+        "comma-spacing": "error",
+        "comma-style": ["error", "last"],
+        "eol-last": "error",
+        "eqeqeq": "error",
+        "func-call-spacing": "error",
+        "indent": ["error", 4, {"SwitchCase": 1}],
+        "key-spacing": ["error", {"mode": "strict", "beforeColon": false, "afterColon": true}],
+        "keyword-spacing": "error",
+        "no-multi-spaces": "error",
+        "no-multiple-empty-lines": "error",
+        "no-shadow": "error",
+        "no-undef": "error",
+        "no-unneeded-ternary": ["error", {"defaultAssignment": false}],
+        "no-unused-vars": "error",
+        "no-var": "warn",
+        "object-curly-spacing": ["error", "never"],
+        "prefer-template": "error",
+        "quote-props": ["error", "as-needed"],
+        "quotes": ["error", "single", {"avoidEscape": true, "allowTemplateLiterals": true}],
+        "semi": ["error", "never"],
+        "space-before-blocks": "error",
+        "space-before-function-paren": ["error", {
+        "anonymous": "never",
+        "named": "never",
+        "asyncArrow": "always"
+    }],
+        "space-in-parens": ["error", "never"],
+        "space-infix-ops": ["error", {"int32Hint": false}],
+        "strict": "off",
+        "dot-location": ["error", "property"],
+        "object-shorthand": "error"
+},
+    "overrides": [
+    {
+        "files": [
+          "**/setupJest.js",
+          "**/*.test.js"
+        ],
+        "env": {
+            "jest": true,
+            "node": true
+        },
+        "rules": {
+            "jest/no-focused-tests": "error",
+            "jest/consistent-test-it": ["error", {"fn": "it"}],
+            "jest/prefer-to-have-length": "error",
+            "jest/prefer-to-be-null": "error",
+            "jest/prefer-to-be-undefined": "error",
+            "jest/no-identical-title": "error"
+        }
+    }
+]
+}

@@ -4,7 +4,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 // TODO: logging
-const logger = require('morgan') 
+const logger = require('morgan')
 
 const port = process.env.PORT || 3000
 const password = process.env.PASSWORD
@@ -15,20 +15,20 @@ const app = express()
 // connect to mongodb, then configure & start server
 mongoose.connect(`mongodb+srv://${user}:${password}@myretaildbcluster-nqsoj.mongodb.net/myRetail?retryWrites=true`,
     {useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false})
-        .then(() => {
-            console.log('Database connection successful')
-            
-            app.use(bodyParser.urlencoded({extended: false}))
-            app.use(bodyParser.json())
-            app.use('/', routes);
-            app.use((req, res) => {
-                res.status(404).send()
-            })
-            app.listen(port, () => {
-                console.log(`myRetail RESTful service is ready, listening on port ${port}`)
-            })
+    .then(() => {
+        console.log('Database connection successful')
+
+        app.use(bodyParser.urlencoded({extended: false}))
+        app.use(bodyParser.json())
+        app.use('/', routes)
+        app.use((req, res) => {
+            res.status(404).send()
         })
-        .catch(error => {
-            console.error('App starting error:', error.stack)
-            process.exit(1)
+        app.listen(port, () => {
+            console.log(`myRetail RESTful service is ready, listening on port ${port}`)
         })
+    })
+    .catch(error => {
+        console.error('App starting error:', error.stack)
+        process.exit(1)
+    })

@@ -7,13 +7,13 @@ module.exports = routeSchema => (req, res, next) => {
             return validate().then(result => ({[key]: result}))
         })
     return Promise.all(validations)
-                  .then(result => {
-                      req.validated = Object.assign({}, ...result)
-                      next()
-                  })
-                  .catch(validationError => {
-                      console.error(validationError)
-                      const message = validationError.details.map(d => d.message)
-                      res.status(400).send(message)
-                  })
+        .then(result => {
+            req.validated = Object.assign({}, ...result)
+            next()
+        })
+        .catch(validationError => {
+            console.error(validationError)
+            const message = validationError.details.map(d => d.message)
+            res.status(400).send(message)
+        })
 }

@@ -12,18 +12,16 @@ const schema = {
     })
 }
 
-module.exports = router => {
+module.exports = router => 
     router.put('/products/:id', schemaValidator(schema), async (req, res) => {
         try {
-            const productId = req.params.id
-            let response = await Product.findOneAndUpdate({productId}, req.body, {
+            let {productId, price} = await Product.findOneAndUpdate({productId: req.params.id}, req.body, {
                 new: true, runValidators: true, upsert: true
             })
             console.log(`Update successful: ${productId}`)
-            res.json(response)
+            res.json({productId, price})
         } catch (error) {
             console.error(error)
-            res.status(500).send('An error occured, contact administrator')
+            res.status(500).json({error: 'An error occured, contact administrator'})
         }
     })
-}

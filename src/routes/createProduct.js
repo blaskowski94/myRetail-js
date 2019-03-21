@@ -1,8 +1,8 @@
 const Joi = require('joi')
-const schemaValidator = require('../util/schemaValidator')
 const _ = require('lodash')
 const mongoose = require('mongoose')
 const Product = mongoose.model('Product')
+const schemaValidator = require('../util/schemaValidator')
 
 const schema = {
     body: Joi.object().keys({
@@ -11,17 +11,17 @@ const schema = {
     })
 }
 
-module.exports = router => {
+module.exports = router =>
     router.post('/products', schemaValidator(schema), async (req, res) => {
         try {
             const newProduct = new Product(req.body)
-            const product = await newProduct.save()
-            console.log(`POST successful: ${product.productId}`)
-            res.json(product)
+            const {productId, price} = await newProduct.save()
+            console.log(`POST successful: ${productId}`)
+            res.json({productId, price})
         } catch (error) {
             console.error(error)
             if (_.get(error, 'code') === 11000) res.status(409).json({error: `productId ${req.body.productId} already in use`})
             else res.status(500).json({error: 'An error occured, contact administrator'})
         }
     })
-}
+
