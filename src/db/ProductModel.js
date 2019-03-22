@@ -1,6 +1,24 @@
 const mongoose = require('mongoose')
 const {Schema} = mongoose
 
+/* eslint-disable indent */
+/**
+ * @swagger
+ * definitions:
+ *   Product:
+ *     type: object
+ *     properties:
+ *       productId:
+ *         type: integer
+ *         example: 12345678
+ *         required: true
+ *         minimum: 10000000
+ *         maximum: 99999999
+ *       price:
+ *         type: string
+ *         example: $1,234.56
+ *         required: true
+ */
 const ProductModel = new Schema({
     productId: {
         type: Number,

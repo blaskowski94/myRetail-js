@@ -9,6 +9,32 @@ const schema = {
     })
 }
 
+/**
+ * @swagger
+ * /products/{id}:
+ *   delete:
+ *     tags:
+ *       - Products
+ *     name: Delete Product
+ *     summary: Delete product from database
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: id of product to be deleted
+ *         type: integer
+ *         required: true
+ *     responses:
+ *       '204':
+ *         description: Product deleted from db
+ *       '400':
+ *         description: Validation error
+ *       '500':
+ *         description: Problem communicating with db
+ */
 module.exports = router =>
     router.delete('/products/:id', schemaValidator(schema), async (req, res) => {
         try {

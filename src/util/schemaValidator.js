@@ -1,4 +1,3 @@
-// TODO: return all validation errors at once instaed of one at a time
 module.exports = routeSchema => (req, res, next) => {
     const validations = ['headers', 'params', 'query', 'body']
         .map(key => {

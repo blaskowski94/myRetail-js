@@ -2,6 +2,22 @@ const mongoose = require('mongoose')
 const Product = mongoose.model('Product')
 const _ = require('lodash')
 
+/**
+ * @swagger
+ * /products:
+ *   get:
+ *     tags:
+ *       - Products
+ *     name: List Product
+ *     summary: List products in database
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       '200':
+ *         description: An array of product objects
+ *       '500':
+ *         description: Problem communicating with db
+ */
 module.exports = router =>
     router.get('/products', async (req, res) => {
         try {

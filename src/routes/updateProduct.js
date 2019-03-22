@@ -12,6 +12,42 @@ const schema = {
     })
 }
 
+/**
+ * @swagger
+ * /products/{id}:
+ *   put:
+ *     tags:
+ *       - Products
+ *     name: Update Product
+ *     summary: Upsert product's price in database
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: id of product to be updated
+ *         type: integer
+ *         example: 12345678
+ *         required: true
+ *       - in: body
+ *         name: price
+ *         description: new price of the product
+ *         type: string
+ *         example: {"price": "$1,000.25"}
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: Product updated in db
+ *         schema:
+ *           $ref: '#/definitions/Product'
+ *       '400':
+ *         description: Validation error
+ *       '500':
+ *         description: Problem communicating with db
+ */
+// TODO: change to insesrt and 404 if not found?
 module.exports = router => 
     router.put('/products/:id', schemaValidator(schema), async (req, res) => {
         try {

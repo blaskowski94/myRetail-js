@@ -11,6 +11,35 @@ const schema = {
     })
 }
 
+/**
+ * @swagger
+ * /products:
+ *   post:
+ *     tags:
+ *       - Products
+ *     name: Create Product
+ *     summary: Create product in database
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: product
+ *         schema:
+ *           $ref: '#/definitions/Product'
+ *     responses:
+ *       '200':
+ *         description: Product created in db
+ *         schema:
+ *           $ref: '#/definitions/Product'
+ *       '400':
+ *         description: Validation error
+ *       '409':
+ *         description: Duplicate productId
+ *       '500':
+ *         description: Problem communicating with db
+ */
 module.exports = router =>
     router.post('/products', schemaValidator(schema), async (req, res) => {
         try {

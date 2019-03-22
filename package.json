@@ -38,6 +38,8 @@
     "lodash": "4.17.11",
     "mongoose": "5.4.19",
     "morgan": "1.9.1",
-    "node-fetch": "2.3.0"
+    "node-fetch": "2.3.0",
+    "swagger-jsdoc": "3.2.7",
+    "swagger-ui-express": "4.0.2"
   }
 }

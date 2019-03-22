@@ -52,7 +52,6 @@ it('should get a product with only name', async () => {
     expect(res.status).toEqual(200)
 })
 
-// TODO: tell them not a valid product id?
 it('should get a product with no name or price', async () => {
     Product.findOne.mockResolvedValueOnce({})
     fetch.mockResponse(JSON.stringify({}))

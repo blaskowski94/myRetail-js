@@ -12,7 +12,44 @@ const schema = {
 }
 const apiUrl = productId => `https://redsky.target.com/v2/pdp/tcin/${productId}?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics,esp,deep_red_labels,available_to_promise_network`
 
-// TODO: write to database if price not found?
+/**
+ * @swagger
+ * /products/{id}:
+ *   get:
+ *     tags:
+ *       - Products
+ *     name: Get Product
+ *     summary: Get product name from redsky API and price from database
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: A single product object
+ *         schema:
+ *           type: object
+ *           properties:
+ *             productId:
+ *               type: integer
+ *               example: 12345678
+ *             productName:
+ *               type: string
+ *               example: 'Xbox Controller'
+ *             price:
+ *               type: string
+ *               example: '$1,234.25'
+ *       '400':
+ *         description: Validation error
+ *       '500':
+ *         description: Problem communicating with db
+ */
+// TODO: write price from request to database if price not found?
+// TODO: return 404 if neither found
 module.exports = router =>
     router.get('/products/:id', schemaValidator(schema), async (req, res) => {
         try {
