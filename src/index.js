@@ -3,8 +3,6 @@ const routes = require('./routeLoader')
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
-// TODO: logging
-const logger = require('morgan')
 const swaggerJSDoc = require('swagger-jsdoc')
 const swaggerUi = require('swagger-ui-express')
 const swaggerConfig = require('./setupSwagger')
@@ -15,7 +13,7 @@ const user = process.env.USER
 const app = express()
 const swaggerSpec = swaggerJSDoc(swaggerConfig)
 
-// TODO: load data into DB
+// TODO: switch from console.log to a logger
 // connect to mongodb, then configure & start server
 console.log('connecting to database...')
 mongoose.connect(`mongodb+srv://${user}:${password}@myretaildbcluster-nqsoj.mongodb.net/myRetail?retryWrites=true`,

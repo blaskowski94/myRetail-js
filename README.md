@@ -18,7 +18,7 @@ update a specific entry, delete a specific entry or get an entry with price info
 
 ### Installing
 
-* Clone the project repository, navigate to folder, install dependencies
+Clone the project repository, navigate to folder, install dependencies
 
 ```
 git clone https://github.com/blaskowski94/myRetail-js.git
@@ -78,7 +78,7 @@ npm run lint
 
 ### Authors
 
-* **Bob Laskowski** - *All work* - [blaskowski94](https://github.com/blaskowski94)
+* **Bob Laskowski** - [blaskowski94](https://github.com/blaskowski94)
 
 ### License
 

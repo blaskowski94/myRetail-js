@@ -10,7 +10,7 @@ const schema = {
         id: Joi.number().integer().min(10000000).max(99999999).required()
     })
 }
-const apiUrl = productId => `https://redsky.target.com/v2/pdp/tcin/${productId}?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics,esp,deep_red_labels,available_to_promise_network`
+const apiUrl = productId => `https://redsky.target.com/v2/pdp/tcin/${productId}?excludes=taxonomy,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics,esp,deep_red_labels,available_to_promise_network`
 
 /**
  * @swagger
@@ -48,20 +48,33 @@ const apiUrl = productId => `https://redsky.target.com/v2/pdp/tcin/${productId}?
  *       '500':
  *         description: Problem communicating with db
  */
-// TODO: write price from request to database if price not found?
-// TODO: return 404 if neither found
 module.exports = router =>
     router.get('/products/:id', schemaValidator(schema), async (req, res) => {
         try {
             const productId = req.params.id
             const apiProduct = await (await fetch(apiUrl(productId))).json()
             const productName = _.get(apiProduct, 'product.item.product_description.title', 'Unavailable')
-
+            const apiPrice = _.get(apiProduct, 'product.price.listPrice.formattedPrice')
+            console.log(productName)
             const dbProduct = await Product.findOne({productId})
-            const productPrice = _.get(dbProduct, 'price', 'Unavailable')
+            let productPrice = _.get(dbProduct, 'price', 'Unavailable')
 
-            console.log(`GET successful: {productName: ${productName}, productPrice: ${productPrice}}`)
-            res.json({productId, productName, productPrice})
+            // add price from API to db if no price currently in db
+            if (productPrice === 'Unavailable' && !!apiPrice) {
+                const {price} = await Product.findOneAndUpdate({productId: req.params.id}, {price: apiPrice}, {
+                    new: true, runValidators: true, upsert: true
+                })
+                productPrice = price
+            }
+
+            // if no price or title found, return 404
+            if (productPrice === 'Unavailable' && productName === 'Unavailable') {
+                console.log(`404: Product with ${productId} could not be found`)
+                res.status(404).json({error: `Product with productId ${productId} could not be found`})
+            } else {
+                console.log(`GET successful: {productName: ${productName}, productPrice: ${productPrice}}`)
+                res.json({productId, productName, productPrice})
+            }
         } catch (error) {
             console.error(error)
             res.status(500).json({error: 'An error occured, contact administrator'})

@@ -47,7 +47,6 @@ const schema = {
  *       '500':
  *         description: Problem communicating with db
  */
-// TODO: change to insesrt and 404 if not found?
 module.exports = router => 
     router.put('/products/:id', schemaValidator(schema), async (req, res) => {
         try {

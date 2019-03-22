@@ -27,6 +27,7 @@
         "indent": ["error", 4, {"SwitchCase": 1}],
         "key-spacing": ["error", {"mode": "strict", "beforeColon": false, "afterColon": true}],
         "keyword-spacing": "error",
+        "no-console": "off",
         "no-multi-spaces": "error",
         "no-multiple-empty-lines": "error",
         "no-shadow": "error",

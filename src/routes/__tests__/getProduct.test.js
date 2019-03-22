@@ -5,10 +5,12 @@ const Product = require('../../db/ProductModel')
 const getProduct = require('../getProduct')
 const fetch = require('node-fetch')
 
+const apiUrl = 'https://redsky.target.com/v2/pdp/tcin/12345678?excludes=taxonomy,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics,esp,deep_red_labels,available_to_promise_network'
 let app
 
 beforeAll(() => {
     Product.findOne = jest.fn()
+    Product.findOneAndUpdate = jest.fn()
 })
 
 beforeEach(() => {
@@ -22,7 +24,7 @@ it('should get a product with name and price', async () => {
 
     const res = await request(app).get('/products/12345678')
 
-    expect(fetch).toHaveBeenCalledWith('https://redsky.target.com/v2/pdp/tcin/12345678?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics,esp,deep_red_labels,available_to_promise_network')
+    expect(fetch).toHaveBeenCalledWith(apiUrl)
     expect(Product.findOne).toHaveBeenCalledWith({productId: '12345678'})
     expect(res.body).toEqual({productId: '12345678', productName: 'awesome product', productPrice: '$1.25'})
     expect(res.status).toEqual(200)
@@ -34,7 +36,7 @@ it('should get a product with only price', async () => {
 
     const res = await request(app).get('/products/12345678')
 
-    expect(fetch).toHaveBeenCalledWith('https://redsky.target.com/v2/pdp/tcin/12345678?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics,esp,deep_red_labels,available_to_promise_network')
+    expect(fetch).toHaveBeenCalledWith(apiUrl)
     expect(Product.findOne).toHaveBeenCalledWith({productId: '12345678'})
     expect(res.body).toEqual({productId: '12345678', productName: 'Unavailable', productPrice: '$1.25'})
     expect(res.status).toEqual(200)
@@ -46,21 +48,35 @@ it('should get a product with only name', async () => {
 
     const res = await request(app).get('/products/12345678')
 
-    expect(fetch).toHaveBeenCalledWith('https://redsky.target.com/v2/pdp/tcin/12345678?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics,esp,deep_red_labels,available_to_promise_network')
+    expect(fetch).toHaveBeenCalledWith(apiUrl)
     expect(Product.findOne).toHaveBeenCalledWith({productId: '12345678'})
     expect(res.body).toEqual({productId: '12345678', productName: 'awesome product', productPrice: 'Unavailable'})
     expect(res.status).toEqual(200)
 })
 
-it('should get a product with no name or price', async () => {
+it('should 404 for product with no name or price', async () => {
     Product.findOne.mockResolvedValueOnce({})
     fetch.mockResponse(JSON.stringify({}))
 
     const res = await request(app).get('/products/12345678')
 
-    expect(fetch).toHaveBeenCalledWith('https://redsky.target.com/v2/pdp/tcin/12345678?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics,esp,deep_red_labels,available_to_promise_network')
+    expect(fetch).toHaveBeenCalledWith(apiUrl)
     expect(Product.findOne).toHaveBeenCalledWith({productId: '12345678'})
-    expect(res.body).toEqual({productId: '12345678', productName: 'Unavailable', productPrice: 'Unavailable'})
+    expect(res.body).toEqual({error: 'Product with productId 12345678 could not be found'})
+    expect(res.status).toEqual(404)
+})
+
+it('should upsert product price if api has price and db does not', async () => {
+    Product.findOne.mockResolvedValueOnce({})
+    Product.findOneAndUpdate.mockResolvedValueOnce({price: '$19.99', productId: '12345678'})
+    fetch.mockResponse(JSON.stringify({product: {price: {listPrice: {formattedPrice: '$19.99'}}, item: {product_description: {title: 'awesome product'}}}}))
+
+    const res = await request(app).get('/products/12345678')
+
+    expect(fetch).toHaveBeenCalledWith(apiUrl)
+    expect(Product.findOne).toHaveBeenCalledWith({productId: '12345678'})
+    expect(Product.findOneAndUpdate).toHaveBeenCalledWith({productId: '12345678'}, {price: '$19.99'}, {new: true, runValidators: true, upsert: true})
+    expect(res.body).toEqual({productId: '12345678', productName: 'awesome product', productPrice: '$19.99'})
     expect(res.status).toEqual(200)
 })
 
@@ -69,7 +85,7 @@ it('should handle error on fetch', async () => {
 
     const res = await request(app).get('/products/12345678')
 
-    expect(fetch).toHaveBeenCalledWith('https://redsky.target.com/v2/pdp/tcin/12345678?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics,esp,deep_red_labels,available_to_promise_network')
+    expect(fetch).toHaveBeenCalledWith(apiUrl)
     expect(Product.findOne).not.toHaveBeenCalled()
     expect(res.body).toEqual({error: 'An error occured, contact administrator'})
     expect(res.status).toEqual(500)
@@ -81,7 +97,7 @@ it('should handle generic error from database', async () => {
 
     const res = await request(app).get('/products/12345678')
 
-    expect(fetch).toHaveBeenCalledWith('https://redsky.target.com/v2/pdp/tcin/12345678?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics,esp,deep_red_labels,available_to_promise_network')
+    expect(fetch).toHaveBeenCalledWith(apiUrl)
     expect(Product.findOne).toHaveBeenCalledWith({productId: '12345678'})
     expect(res.body).toEqual({error: 'An error occured, contact administrator'})
     expect(res.status).toEqual(500)
