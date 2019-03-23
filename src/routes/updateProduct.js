@@ -8,7 +8,8 @@ const schema = {
         id: Joi.number().integer().min(10000000).max(99999999).required()
     }),
     body: Joi.object().keys({
-        price: Joi.string().regex(/^\$?[0-9]{1,3}(?:,?[0-9]{3})*\.[0-9]{2}$/, 'US dollar, $1,000.00 format').required()
+        value: Joi.number().precision(2).strict().positive().required(),
+        currency_code: Joi.string().required()
     })
 }
 
@@ -32,14 +33,20 @@ const schema = {
  *         example: 12345678
  *         required: true
  *       - in: body
- *         name: price
- *         description: new price of the product
- *         type: string
- *         example: {"price": "$1,000.25"}
- *         required: true
+ *         name: current_price
+ *         type: object
+ *         properties:
+ *           value:
+ *             type: float
+ *             example: 1234.56
+ *             required: true
+ *           currency_code:
+ *             type: string
+ *             example: 'USD'
+ *             required: true
  *     responses:
  *       '200':
- *         description: Product updated in db
+ *         description: Product upserted in db
  *         schema:
  *           $ref: '#/definitions/Product'
  *       '400':
@@ -47,14 +54,14 @@ const schema = {
  *       '500':
  *         description: Problem communicating with db
  */
-module.exports = router => 
+module.exports = router =>
     router.put('/products/:id', schemaValidator(schema), async (req, res) => {
         try {
-            let {productId, price} = await Product.findOneAndUpdate({productId: req.params.id}, req.body, {
+            let {id, current_price} = await Product.findOneAndUpdate({id: req.params.id}, {current_price: req.body}, {
                 new: true, runValidators: true, upsert: true
             })
-            console.log(`Update successful: ${productId}`)
-            res.json({productId, price})
+            console.log(`Update successful: ${id}`)
+            res.json({id, current_price})
         } catch (error) {
             console.error(error)
             res.status(500).json({error: 'An error occured, contact administrator'})

@@ -38,9 +38,9 @@ const schema = {
 module.exports = router =>
     router.delete('/products/:id', schemaValidator(schema), async (req, res) => {
         try {
-            const productId = req.params.id
-            await Product.deleteOne({productId})
-            console.log(`DELETE successful: ${productId}`)
+            const id = req.params.id
+            await Product.deleteOne({id})
+            console.log(`DELETE successful: ${id}`)
             res.status(204).send()
         } catch (error) {
             console.error(error)

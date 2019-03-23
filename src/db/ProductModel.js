@@ -8,19 +8,27 @@ const {Schema} = mongoose
  *   Product:
  *     type: object
  *     properties:
- *       productId:
+ *       id:
  *         type: integer
  *         example: 12345678
  *         required: true
  *         minimum: 10000000
  *         maximum: 99999999
- *       price:
- *         type: string
- *         example: $1,234.56
+ *       current_price:
+ *         type: object
  *         required: true
+ *         properties:
+ *           value:
+ *             type: float
+ *             example: 1234.56
+ *             required: true
+ *           currency_code:
+ *             type: string
+ *             example: 'USD'
+ *             required: true
  */
 const ProductModel = new Schema({
-    productId: {
+    id: {
         type: Number,
         unique: true,
         required: '8 digit number',
@@ -31,10 +39,15 @@ const ProductModel = new Schema({
             message: '{VALUE} is not an integer value'
         }
     },
-    price: {
-        type: String,
-        required: '$1,000.00 format',
-        match: /^\$?[0-9]{1,3}(?:,?[0-9]{3})*\.[0-9]{2}$/
+    current_price: {
+        value: {
+            type: Number,
+            required: true
+        },
+        currency_code: {
+            type: String,
+            required: true
+        }
     }
 })
 

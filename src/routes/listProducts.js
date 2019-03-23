@@ -23,7 +23,7 @@ module.exports = router =>
         try {
             const list = await Product.find({})
             console.log('GET successful: list')
-            res.json(_.orderBy(_.map(list, item => _.pick(item, ['productId', 'price'])), ['productId']))
+            res.json(_.orderBy(_.map(list, item => _.pick(item, ['id', 'current_price'])), ['id']))
         } catch (error) {
             console.error(error)
             res.status(500).json({error: 'An error occured, contact administrator'})

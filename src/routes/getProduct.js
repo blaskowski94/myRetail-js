@@ -34,46 +34,54 @@ const apiUrl = productId => `https://redsky.target.com/v2/pdp/tcin/${productId}?
  *         schema:
  *           type: object
  *           properties:
- *             productId:
+ *             id:
  *               type: integer
  *               example: 12345678
- *             productName:
+ *             name:
  *               type: string
  *               example: 'Xbox Controller'
  *             price:
- *               type: string
- *               example: '$1,234.25'
+ *               type: object
+ *               properties:
+ *                 value:
+ *                   type: float
+ *                   example: 1234.56
+ *                 currency_code:
+ *                   type: string
+ *                   example: 'USD'
  *       '400':
  *         description: Validation error
+ *       '404':
+ *         description: Product not found in redsky API or in database
  *       '500':
  *         description: Problem communicating with db
  */
 module.exports = router =>
     router.get('/products/:id', schemaValidator(schema), async (req, res) => {
         try {
-            const productId = req.params.id
-            const apiProduct = await (await fetch(apiUrl(productId))).json()
-            const productName = _.get(apiProduct, 'product.item.product_description.title', 'Unavailable')
-            const apiPrice = _.get(apiProduct, 'product.price.listPrice.formattedPrice')
-            console.log(productName)
-            const dbProduct = await Product.findOne({productId})
-            let productPrice = _.get(dbProduct, 'price', 'Unavailable')
+            const id = req.params.id
+            const apiProduct = await (await fetch(apiUrl(id))).json()
+            const name = _.get(apiProduct, 'product.item.product_description.title', 'Unavailable')
+            const apiPrice = _.get(apiProduct, 'product.price.listPrice.minPrice') || _.get(apiProduct, 'product.price.listPrice.price', 'Unavailable')
+            console.log(apiPrice)
+            const dbProduct = await Product.findOne({id})
+            let current_price = _.get(dbProduct, 'current_price', 'Unavailable')
 
             // add price from API to db if no price currently in db
-            if (productPrice === 'Unavailable' && !!apiPrice) {
-                const {price} = await Product.findOneAndUpdate({productId: req.params.id}, {price: apiPrice}, {
+            if (current_price === 'Unavailable' && _.isNumber(apiPrice)) {
+                const {current_price: newPrice} = await Product.findOneAndUpdate({id}, {current_price: {value: apiPrice, currency_code: 'USD'}}, {
                     new: true, runValidators: true, upsert: true
                 })
-                productPrice = price
+                current_price = newPrice
             }
 
             // if no price or title found, return 404
-            if (productPrice === 'Unavailable' && productName === 'Unavailable') {
-                console.log(`404: Product with ${productId} could not be found`)
-                res.status(404).json({error: `Product with productId ${productId} could not be found`})
+            if (current_price === 'Unavailable' && name === 'Unavailable') {
+                console.log(`404: Product with id ${id} could not be found`)
+                res.status(404).json({error: `Product with id ${id} could not be found`})
             } else {
-                console.log(`GET successful: {productName: ${productName}, productPrice: ${productPrice}}`)
-                res.json({productId, productName, productPrice})
+                console.log(`GET successful: {id: ${id}, name: ${name}, current_price: ${current_price}}`)
+                res.json({id, name, current_price})
             }
         } catch (error) {
             console.error(error)

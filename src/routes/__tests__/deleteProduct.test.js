@@ -19,7 +19,7 @@ it('should delete a product', async () => {
     Product.deleteOne.mockResolvedValueOnce({})
 
     const res = await request(app).delete('/products/12345678')
-    expect(Product.deleteOne).toHaveBeenCalledWith({productId: '12345678'})
+    expect(Product.deleteOne).toHaveBeenCalledWith({id: '12345678'})
     expect(res.status).toEqual(204)
 })
 
@@ -27,7 +27,7 @@ it('should handle generic error from database', async () => {
     Product.deleteOne.mockRejectedValueOnce({error: 'invalid request'})
 
     const res = await request(app).delete('/products/12345678')
-    expect(Product.deleteOne).toHaveBeenCalledWith({productId: '12345678'})
+    expect(Product.deleteOne).toHaveBeenCalledWith({id: '12345678'})
     expect(res.body).toEqual({error: 'An error occured, contact administrator'})
     expect(res.status).toEqual(500)
 })

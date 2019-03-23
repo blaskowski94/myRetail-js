@@ -19,26 +19,26 @@ beforeEach(() => {
 })
 
 it('should get a product with name and price', async () => {
-    Product.findOne.mockResolvedValueOnce({productId: '12345678', price: '$1.25'})
+    Product.findOne.mockResolvedValueOnce({current_price: {value: 1.25, currency_code: 'USD'}, id: '12345678'})
     fetch.mockResponse(JSON.stringify({product: {item: {product_description: {title: 'awesome product'}}}}))
 
     const res = await request(app).get('/products/12345678')
 
     expect(fetch).toHaveBeenCalledWith(apiUrl)
-    expect(Product.findOne).toHaveBeenCalledWith({productId: '12345678'})
-    expect(res.body).toEqual({productId: '12345678', productName: 'awesome product', productPrice: '$1.25'})
+    expect(Product.findOne).toHaveBeenCalledWith({id: '12345678'})
+    expect(res.body).toEqual({id: '12345678', name: 'awesome product', current_price: {value: 1.25, currency_code: 'USD'}})
     expect(res.status).toEqual(200)
 })
 
 it('should get a product with only price', async () => {
-    Product.findOne.mockResolvedValueOnce({productId: '12345678', price: '$1.25'})
+    Product.findOne.mockResolvedValueOnce({current_price: {value: 1.25, currency_code: 'USD'}, id: '12345678'})
     fetch.mockResponse(JSON.stringify({}))
 
     const res = await request(app).get('/products/12345678')
 
     expect(fetch).toHaveBeenCalledWith(apiUrl)
-    expect(Product.findOne).toHaveBeenCalledWith({productId: '12345678'})
-    expect(res.body).toEqual({productId: '12345678', productName: 'Unavailable', productPrice: '$1.25'})
+    expect(Product.findOne).toHaveBeenCalledWith({id: '12345678'})
+    expect(res.body).toEqual({id: '12345678', name: 'Unavailable', current_price: {value: 1.25, currency_code: 'USD'}})
     expect(res.status).toEqual(200)
 })
 
@@ -49,8 +49,8 @@ it('should get a product with only name', async () => {
     const res = await request(app).get('/products/12345678')
 
     expect(fetch).toHaveBeenCalledWith(apiUrl)
-    expect(Product.findOne).toHaveBeenCalledWith({productId: '12345678'})
-    expect(res.body).toEqual({productId: '12345678', productName: 'awesome product', productPrice: 'Unavailable'})
+    expect(Product.findOne).toHaveBeenCalledWith({id: '12345678'})
+    expect(res.body).toEqual({id: '12345678', name: 'awesome product', current_price: 'Unavailable'})
     expect(res.status).toEqual(200)
 })
 
@@ -61,22 +61,36 @@ it('should 404 for product with no name or price', async () => {
     const res = await request(app).get('/products/12345678')
 
     expect(fetch).toHaveBeenCalledWith(apiUrl)
-    expect(Product.findOne).toHaveBeenCalledWith({productId: '12345678'})
-    expect(res.body).toEqual({error: 'Product with productId 12345678 could not be found'})
+    expect(Product.findOne).toHaveBeenCalledWith({id: '12345678'})
+    expect(res.body).toEqual({error: 'Product with id 12345678 could not be found'})
     expect(res.status).toEqual(404)
 })
 
 it('should upsert product price if api has price and db does not', async () => {
     Product.findOne.mockResolvedValueOnce({})
-    Product.findOneAndUpdate.mockResolvedValueOnce({price: '$19.99', productId: '12345678'})
-    fetch.mockResponse(JSON.stringify({product: {price: {listPrice: {formattedPrice: '$19.99'}}, item: {product_description: {title: 'awesome product'}}}}))
+    Product.findOneAndUpdate.mockResolvedValueOnce({current_price: {value: 19.99, currency_code: 'USD'}, id: '12345678'})
+    fetch.mockResponse(JSON.stringify({product: {price: {listPrice: {price: 19.99}}, item: {product_description: {title: 'awesome product'}}}}))
 
     const res = await request(app).get('/products/12345678')
 
     expect(fetch).toHaveBeenCalledWith(apiUrl)
-    expect(Product.findOne).toHaveBeenCalledWith({productId: '12345678'})
-    expect(Product.findOneAndUpdate).toHaveBeenCalledWith({productId: '12345678'}, {price: '$19.99'}, {new: true, runValidators: true, upsert: true})
-    expect(res.body).toEqual({productId: '12345678', productName: 'awesome product', productPrice: '$19.99'})
+    expect(Product.findOne).toHaveBeenCalledWith({id: '12345678'})
+    expect(Product.findOneAndUpdate).toHaveBeenCalledWith({id: '12345678'}, {current_price: {value: 19.99, currency_code: 'USD'}}, {new: true, runValidators: true, upsert: true})
+    expect(res.body).toEqual({id: '12345678', name: 'awesome product', current_price: {value: 19.99, currency_code: 'USD'}})
+    expect(res.status).toEqual(200)
+})
+
+it('should upsert product price if api has minPrice and db does not', async () => {
+    Product.findOne.mockResolvedValueOnce({})
+    Product.findOneAndUpdate.mockResolvedValueOnce({current_price: {value: 19.99, currency_code: 'USD'}, id: '12345678'})
+    fetch.mockResponse(JSON.stringify({product: {price: {listPrice: {minPrice: 19.99}}, item: {product_description: {title: 'awesome product'}}}}))
+
+    const res = await request(app).get('/products/12345678')
+
+    expect(fetch).toHaveBeenCalledWith(apiUrl)
+    expect(Product.findOne).toHaveBeenCalledWith({id: '12345678'})
+    expect(Product.findOneAndUpdate).toHaveBeenCalledWith({id: '12345678'}, {current_price: {value: 19.99, currency_code: 'USD'}}, {new: true, runValidators: true, upsert: true})
+    expect(res.body).toEqual({id: '12345678', name: 'awesome product', current_price: {value: 19.99, currency_code: 'USD'}})
     expect(res.status).toEqual(200)
 })
 
@@ -98,7 +112,7 @@ it('should handle generic error from database', async () => {
     const res = await request(app).get('/products/12345678')
 
     expect(fetch).toHaveBeenCalledWith(apiUrl)
-    expect(Product.findOne).toHaveBeenCalledWith({productId: '12345678'})
+    expect(Product.findOne).toHaveBeenCalledWith({id: '12345678'})
     expect(res.body).toEqual({error: 'An error occured, contact administrator'})
     expect(res.status).toEqual(500)
 })
